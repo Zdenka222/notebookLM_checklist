@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startovací Checklist - NotebookLM pro Podnikatelky</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, 
+                rgba(255, 182, 193, 0.1) 0%,
+                rgba(173, 216, 230, 0.1) 50%, 
+                rgba(144, 238, 144, 0.1) 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .watercolor-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(255, 182, 193, 0.2) 0%, 
+                rgba(173, 216, 230, 0.2) 50%, 
+                rgba(144, 238, 144, 0.2) 100%);
+            z-index: -1;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: linear-gradient(90deg, #ff6b9d, #4ecdc4, #95e1a4);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .checklist-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid;
+            position: relative;
+        }
+        
+        .step1 { border-left-color: #ff6b9d; }
+        .step2 { border-left-color: #4ecdc4; }
+        .step3 { border-left-color: #95e1a4; }
+        .step4 { border-left-color: #ffa726; }
+        .step5 { border-left-color: #ab47bc; }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .checkbox-item:hover {
+            background: rgba(76, 175, 80, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .checkbox-item.completed {
+            background: rgba(76, 175, 80, 0.1);
+            opacity: 0.8;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #4ecdc4;
+            border-radius: 6px;
+            margin-right: 15px;
+            margin-top: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .checkbox.checked {
+            background: #4ecdc4;
+            border-color: #4ecdc4;
+        }
+        
+        .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .checkbox-text {
+            flex: 1;
+            font-size: 1rem;
+            color: #2c3e50;
+            line-height: 1.5;
+        }
+        
+        .checkbox-item.completed .checkbox-text {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+        
+        .tips-section {
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.1), rgba(173, 216, 230, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .tips-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tip-item {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff6b9d;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #ff6b9d, #4ecdc4, #95e1a4);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .cta-text {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #2c3e50;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .celebration.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 15px;
+            }
+            .checklist-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watercolor-bg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">✨</div>
+            <h1 class="title">Startovací Checklist</h1>
+            <p class="subtitle">Váš první chytrý asistent v NotebookLM za 15 minut</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">Dokončeno: 0%</div>
+        </div>
+
+        <div class="checklist-section step1">
+            <h2 class="section-title">
+                <span class="step-number">1</span>
+                Příprava podkladů (Než začnete)
+            </h2>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Vyberte si jeden konkrétní projekt nebo klienta.</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Připravte si 3-5 souvisejících dokumentů (např. zápis z jednání, cenová nabídka, e-mailová komunikace).</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Ujasněte si: Jaký hlavní problém chci pomocí těchto dokumentů vyřešit? (Např. „Co přesně klient chtěl?")</div>
+            </div>
+        </div>
+
+        <div class="checklist-section step2">
+            <h2 class="section-title">
+                <span class="step-number">2</span>
+                První „nakrmení" asistenta
+            </h2>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Založila jsem si účet v NotebookLM.</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Nahrála jsem připravené dokumenty do jednoho sešitu (notebooku).</div>
+            </div>
+        </div>
+
+        <div class="checklist-section step3">
+            <h2 class="section-title">
+                <span class="step-number">3</span>
+                Položte ty správné otázky! (Inspirace pro vás)
+            </h2>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Zkuste se zeptat na shrnutí: „Shrň mi klíčové body z těchto dokumentů."</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Zeptejte se na konkrétní data: „Jaké byly dohodnuté termíny a ceny?"</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Zeptejte se na potřeby klienta: „Jaké jsou největší bolesti nebo výzvy klienta zmíněné v dokumentech?"</div>
+            </div>
+        </div>
+
+        <div class="checklist-section step4">
+            <h2 class="section-title">
+                <span class="step-number">4</span>
+                Zažijte první „Aha!" moment
+            </h2>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Vyzkoušela jsem si vytvořit audio shrnutí ze svých dokumentů.</div>
+            </div>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Nechala jsem si vygenerovat myšlenkovou mapu. „Co mě na ní překvapilo?</div>
+            </div>
+        </div>
+
+        <div class="checklist-section step5">
+            <h2 class="section-title">
+                <span class="step-number">5</span>
+                Plán dalšího využití
+            </h2>
+            
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                <div class="checkbox"></div>
+                <div class="checkbox-text">Poznamenala jsem si 3 konkrétní situace z mého pracovního týdne, kde mi NotebookLM ušetří čas.</div>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3 class="tips-title">
+                💡 TIPY: Připravená na schůzku
+            </h3>
+            
+            <div class="tip-item">
+                <strong>📁 Organizace:</strong> Nahráli jste všechny dokumenty k projektu do jedné složky.
+            </div>
+            
+            <div class="tip-item">
+                <strong>🎧 Audio shrnutí:</strong> Vyzkoušeli jste si dotaz na shrnutí.
+            </div>
+            
+            <div class="tip-item">
+                <strong>📋 Konkrétní otázky:</strong> Máte připravený seznam konkrétních otázek na klienta.
+            </div>
+            
+            <div class="tip-item">
+                <strong>📊 Detaily:</strong> Víte, kde najít detaily, pokud se klient zeptá na specifika.
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3 class="tips-title">
+                🎙️ Máte svůj první "podcast"
+            </h3>
+            
+            <div class="tip-item">
+                📑 Vybrali jste dokumenty na jedno téma.
+            </div>
+            
+            <div class="tip-item">
+                🎵 Vygenerovali jste audio shrnutí.
+            </div>
+            
+            <div class="tip-item">
+                👂 Poslechli jste si ho s poznámkami.
+            </div>
+            
+            <div class="tip-item">
+                📅 Naplánovali jste si, kdy budete poslouchat další.
+            </div>
+            
+            <div class="tip-item">
+                💡 Zjistili jste něco nového o svém byznysu.
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 class="cta-title">🚀 Připravena na další úroveň?</h2>
+            <p class="cta-text">
+                Dokončily jste svůj první krok! Nyní se naučte pokročilé techniky na webináři 
+                "NotebookLM: Váš AI asistent pro efektivní podnikání"
+            </p>
+            <p class="cta-text">
+                ✨ <strong>Bonus pro rychlé:</strong> Prvních 50 účastnic získá AI Toolkit zdarma!
+            </p>
+            <a href="https://form.simpleshop.cz/gNR4Y/" target="_blank" class="cta-button">
+                Přihlásit se na webinář (zaváděcí cena) →
+            </a>
+            <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                Místa jsou omezená • Webinář v češtině • Online
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">🎉</div>
+
+    <script>
+        let completedItems = 0;
+        const totalItems = document.querySelectorAll('.checkbox-item').length;
+
+        function toggleCheckbox(item) {
+            const checkbox = item.querySelector('.checkbox');
+            const isCompleted = item.classList.contains('completed');
+            
+            if (isCompleted) {
+                checkbox.classList.remove('checked');
+                item.classList.remove('completed');
+                completedItems--;
+            } else {
+                checkbox.classList.add('checked');
+                item.classList.add('completed');
+                completedItems++;
+                showCelebration();
+            }
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const percentage = Math.round((completedItems / totalItems) * 100);
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `Dokončeno: ${percentage}% (${completedItems}/${totalItems})`;
+            
+            if (percentage === 100) {
+                setTimeout(() => {
+                    showBigCelebration();
+                }, 500);
+            }
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            const emojis = ['🎉', '✨', '🚀', '💪', '👏', '🌟'];
+            celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 1000);
+        }
+
+        function showBigCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.textContent = '🎊 Skvělá práce! 🎊';
+            celebration.style.fontSize = '2rem';
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+                celebration.style.fontSize = '3rem';
+            }, 3000);
+        }
+
+        // Uložení progress do localStorage
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checkbox-item');
+            const progress = [];
+            
+            checkboxes.forEach((item, index) => {
+                progress[index] = item.classList.contains('completed');
+            });
+            
+            localStorage.setItem('checklistProgress', JSON.stringify(progress));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('checklistProgress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                const checkboxes = document.querySelectorAll('.checkbox-item');
+                
+                progress.forEach((isCompleted, index) => {
+                    if (isCompleted && checkboxes[index]) {
+                        const checkbox = checkboxes[index].querySelector('.checkbox');
+                        checkbox.classList.add('checked');
+                        checkboxes[index].classList.add('completed');
+                        completedItems++;
+                    }
+                });
+                
+                updateProgress();
+            }
+        }
+
+        // Přidání event listeneru pro ukládání
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.checkbox-item')) {
+                setTimeout(saveProgress, 100);
+            }
+        });
+
+        // Načtení při startu
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+</body>
+</html>
